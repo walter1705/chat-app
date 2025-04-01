@@ -1,6 +1,6 @@
 import Config
 
-config :chat_app, ChatApp.DB.Repo,
+config :chat_app, ChatApp.Data.Repo,
   database: "priv/repo/chat_app.db",
   username: "walter17",
   password: "walter17",
@@ -8,4 +8,4 @@ config :chat_app, ChatApp.DB.Repo,
   default_transaction_mode: :immediate,
   pool_size: 5
 
-config :chat_app, ecto_repos: [ChatApp.DB.Repo]
+config :chat_app, ecto_repos: [ChatApp.Data.Repo]
