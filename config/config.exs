@@ -5,7 +5,7 @@ config :chat_app, ChatApp.DB.Repo,
   username: "walter17",
   password: "walter17",
   hostname: "localhost",
-  default_transaction_mode: :inmediate,
+  default_transaction_mode: :immediate,
   pool_size: 5
 
 config :chat_app, ecto_repos: [ChatApp.DB.Repo]

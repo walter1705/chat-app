@@ -1,8 +1,6 @@
 defmodule ChatApp.DB.Repo.Migrations.CreateRoomUsers do
   use Ecto.Migration
 
-  use Ecto.Changeset
-
   def change do
     create table(:chatroom_users) do
       add :user_id, references(:users, on_delete: :nothing), null: false
