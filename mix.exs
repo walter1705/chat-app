@@ -6,9 +6,14 @@ defmodule ChatApp.MixProject do
       app: :chat_app,
       version: "0.1.0",
       elixir: "~> 1.17",
+      escripts: escript_config(),
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
+  end
+
+  def escript_config do
+    [main_module: CLI.Main]
   end
 
   def application do
@@ -20,7 +25,8 @@ defmodule ChatApp.MixProject do
 
   defp deps do
     [
-      {:ecto_sqlite3, "~> 0.19.0"}
+      {:ecto_sqlite3, "~> 0.19.0"}, #SQLite3 adapter that inclute Ecto and EctoSQL
+      {:bcrypt_elixir, "~> 3.2"} #Password hashing algorithm for Elixir
     ]
   end
 end
