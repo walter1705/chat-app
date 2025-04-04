@@ -10,7 +10,6 @@ defmodule CLITest.ParserTest do
     assert(Parser.handle_parse(["list", "rooms"]) == {:list_rooms})
   end
 
-
   test "['list', 'users'] returns {:list_users}" do
     assert(Parser.handle_parse(["list", "users"]) == {:list_users})
   end

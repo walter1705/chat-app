@@ -1,7 +1,6 @@
 defmodule DB.Schemas.Message do
   use Ecto.Schema
-
-  use Ecto.Changeset
+  import Ecto.Changeset
 
   schema "messages" do
     belongs_to(:user, DB.Schemas.User)

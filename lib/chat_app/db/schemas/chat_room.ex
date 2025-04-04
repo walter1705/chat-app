@@ -1,9 +1,9 @@
 defmodule DB.Schemas.ChatRoom do
   use Ecto.Schema
-  use Ecto.Changeset
+  import Ecto.Changeset
 
   schema "chat_rooms" do
-    field(:name, :string, unique: true)
+    field(:name, :string)
     field(:hash_password, :string)
     field(:is_private, :boolean, default: false)
     timestamps()

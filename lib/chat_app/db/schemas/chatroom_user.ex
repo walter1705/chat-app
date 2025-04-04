@@ -1,7 +1,7 @@
 defmodule DB.Schemas.ChatRoomUser do
   use Ecto.Schema
+  import Ecto.Changeset
 
-  use Ecto.Changeset
 
   schema "chatroom_users" do
     field(:joined_at, :utc_datetime)

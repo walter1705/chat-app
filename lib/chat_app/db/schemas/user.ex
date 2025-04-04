@@ -1,11 +1,10 @@
 defmodule DB.Schemas.User do
   use Ecto.Schema
-  use Ecto.Changeset
+  import Ecto.Changeset
 
   schema "users" do
-    field(:username, :string, unique: true)
+    field(:username, :string)
     field(:password_hash, :string)
-    belongs_to(:chat_room, DB.Schemas.ChatRoom)
     timestamps()
   end
 
