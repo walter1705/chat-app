@@ -37,6 +37,8 @@ defmodule CLI.Parser do
 
   def handle_parse(["list", "users"]), do: {:list_users}
 
+  def handle_parse(["list"]), do: Request.list_command_available_options
+
   def handle_parse(["list", _]), do: Request.list_command_available_options()
 
   def handle_parse(["create", room_name]), do: {:create_room, room_name}

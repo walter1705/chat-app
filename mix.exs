@@ -6,6 +6,7 @@ defmodule ChatApp.MixProject do
       app: :chat_app,
       version: "0.1.0",
       elixir: "~> 1.17",
+      name: "chat app",
       escripts: escript_config(),
       start_permanent: Mix.env() == :prod,
       deps: deps()
@@ -18,7 +19,7 @@ defmodule ChatApp.MixProject do
 
   def application do
     [
-      mod: {ChatApp.Application, []},
+      #mod: {ChatApp.Application, []},
       extra_applications: [:logger]
     ]
   end
