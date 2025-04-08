@@ -16,6 +16,7 @@ defmodule CLI.Request do
     Main.show_help_commands()
   end
 
+  @spec request_list_all_users() :: no_return()
   def request_list_all_users() do
     DataService.get_users()
     |> Formater.list_of_maps_to_list_of_list()
@@ -24,6 +25,9 @@ defmodule CLI.Request do
   end
 
   def request_list_all_rooms() do
-    # DataService
+    DataService.get_rooms()
+    |> Formater.list_of_maps_to_list_of_list()
+    |> Formater.format_room_list()
+    |> Main.show_table()
   end
 end

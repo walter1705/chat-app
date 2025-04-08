@@ -27,7 +27,6 @@ defmodule CLI.Main do
 
      For help sucker.
     """)
-    System.halt(2)
   end
 
   def available_list_options() do
@@ -37,16 +36,13 @@ defmodule CLI.Main do
     ./chat_app list rooms  <--- will show all the public chatrooms.
     """
     )
-    System.halt(2)
   end
 
   def show_table({:ok, table}) do
     IO.puts(table)
-    System.halt(2)
   end
 
   def show_table({:error, reason}) do
     IO.puts("Error: #{reason}")
-    System.halt(2)
   end
 end

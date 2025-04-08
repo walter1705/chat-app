@@ -35,9 +35,7 @@ defmodule CLI.Parser do
   @spec handle_parse([String.t()]) :: {atom()} | {atom(), String.t()}
   def handle_parse(["list", "rooms"]) do
     Request.request_list_all_rooms()
-    #{:list_rooms}
   end
-
 
   def handle_parse(["list", "users"]) do
     Request.request_list_all_users()
@@ -59,6 +57,7 @@ defmodule CLI.Parser do
 
 
   def handle_parse(["create", room_name]) do
+
     {:create_room, room_name}
   end
 
