@@ -15,7 +15,7 @@ defmodule ChatApp.Service.DataService do
         {:ok, user} -> IO.inspect(user, label: "useer created")
         {:error, changeset} -> IO.inspect(changeset.errors, label: "Error")
   """
-  @spec create_user(String.t(), String.t()) :: {atom(), %{}}
+  @spec create_user(String.t(), any()) :: {atom(), %{}}
   def create_user(username, password) do
     hashed_password = Bcrypt.hash_pwd_salt(password)
 
@@ -28,7 +28,6 @@ defmodule ChatApp.Service.DataService do
     Repo.insert(changeset)
   end
 
-
   @doc """
   Get all the user from the table and transform it from structu User to map
   return a list of the users (maps):
@@ -37,7 +36,10 @@ defmodule ChatApp.Service.DataService do
   @spec get_users() :: list()
   def get_users() do
     Repo.all(User)
-    |> Enum.map(&Map.from_struct/1)
+    |> Enum.map(fn user ->
+      user
+      |> Map.from_struct()
+      |> Map.drop([:__meta__])
+    end)
   end
-
 end

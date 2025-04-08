@@ -19,7 +19,7 @@ defmodule ChatApp.MixProject do
 
   def application do
     [
-      #mod: {ChatApp.Application, []},
+      mod: {ChatApp.Application, []},
       extra_applications: [:logger]
     ]
   end
@@ -27,7 +27,8 @@ defmodule ChatApp.MixProject do
   defp deps do
     [
       {:ecto_sqlite3, "~> 0.19.0"}, #SQLite3 adapter that inclute Ecto and EctoSQL
-      {:bcrypt_elixir, "~> 3.2"} #Password hashing algorithm for Elixir
+      {:bcrypt_elixir, "~> 3.2"}, #Password hashing algorithm for Elixir
+      {:table_rex, "~> 4.1"} #Tool for pretty table string formating
     ]
   end
 end

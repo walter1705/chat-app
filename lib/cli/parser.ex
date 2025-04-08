@@ -34,23 +34,29 @@ defmodule CLI.Parser do
   """
   @spec handle_parse([String.t()]) :: {atom()} | {atom(), String.t()}
   def handle_parse(["list", "rooms"]) do
-    {:list_rooms}
+    Request.request_list_all_rooms()
+    #{:list_rooms}
   end
 
 
   def handle_parse(["list", "users"]) do
-     :list_users
+    Request.request_list_all_users()
   end
 
   def handle_parse(["list"]) do
-    Request.list_command_available_options
+    Request.list_command_available_options()
   end
 
 
   def handle_parse(["list", _]) do
     Request.list_command_available_options()
   end
- ()
+
+
+
+
+
+
 
   def handle_parse(["create", room_name]) do
     {:create_room, room_name}
@@ -70,6 +76,7 @@ defmodule CLI.Parser do
   def handle_parse(["-h"]) do
     :help
   end
+
   def handle_parse(_) do
     Request.request_for_help()
   end

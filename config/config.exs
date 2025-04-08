@@ -6,6 +6,8 @@ config :chat_app, ChatApp.Data.Repo,
   password: "walter17",
   hostname: "localhost",
   default_transaction_mode: :immediate,
-  pool_size: 5
+  pool_size: 5,
+  adapter: Ecto.Adapters.SQLite3
+
 
 config :chat_app, ecto_repos: [ChatApp.Data.Repo]
