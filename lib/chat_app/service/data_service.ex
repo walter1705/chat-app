@@ -1,4 +1,4 @@
-defmodule ChatApp.App.Service do
+defmodule ChatApp.Service.DataService do
   alias ChatApp.Data.Repo
   require Bcrypt
   alias DB.Schemas.{User}

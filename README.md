@@ -3,7 +3,7 @@ Embedded CLI chat app for server. ^^
 
 ## Installation
 
-
+## Architecture
 
 ## Requirements
 

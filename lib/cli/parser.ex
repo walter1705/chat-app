@@ -33,23 +33,48 @@ defmodule CLI.Parser do
     :invalid
   """
   @spec handle_parse([String.t()]) :: {atom()} | {atom(), String.t()}
-  def handle_parse(["list", "rooms"]), do: {:list_rooms}
+  def handle_parse(["list", "rooms"]) do
+    {:list_rooms}
+  end
 
-  def handle_parse(["list", "users"]), do: {:list_users}
 
-  def handle_parse(["list"]), do: Request.list_command_available_options
+  def handle_parse(["list", "users"]) do
+     :list_users
+  end
 
-  def handle_parse(["list", _]), do: Request.list_command_available_options()
+  def handle_parse(["list"]) do
+    Request.list_command_available_options
+  end
 
-  def handle_parse(["create", room_name]), do: {:create_room, room_name}
 
-  def handle_parse(["join", room_name]), do: {:join, room_name}
+  def handle_parse(["list", _]) do
+    Request.list_command_available_options()
+  end
+ ()
 
-  def handle_parse(["--help"]), do: :help
+  def handle_parse(["create", room_name]) do
+    {:create_room, room_name}
+  end
 
-  def handle_parse(["-h"]), do: :help
 
-  def handle_parse(_), do: :invalid
+  def handle_parse(["join", room_name]) do
+    {:join, room_name}
+  end
+
+
+  def handle_parse(["--help"]) do
+    :help
+  end
+
+
+  def handle_parse(["-h"]) do
+    :help
+  end
+  def handle_parse(_) do
+    Request.request_for_help()
+  end
+
+
 
   # def handle_parse(arg) do
   # TODO ACTIONS COMMAND NEED TO HAVE THEIR OWN CLAUSE
