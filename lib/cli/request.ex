@@ -30,4 +30,30 @@ defmodule CLI.Request do
     |> Formater.format_room_list()
     |> Main.show_table()
   end
+
+  @spec request_create_user(String.t(), String.t()) :: {:ok, String.t()}  | {:error, term()}
+  def request_create_user(username, password) do
+    DataService.create_user(username, password)
+  end
+
+  @spec request_create_room(String.t(), String.t(), boolean()) :: {:ok, String.t()}  | {:error, term()}
+  def request_create_room(room_name, password, is_private?) do
+    DataService.create_room(room_name, password, is_private?)
+  end
+
+  @spec request_create_room(String.t(), atom()) :: {:ok, String.t()} | {:error, term()}
+  def request_create_room(room_name, :default) do
+    DataService.create_room(room_name, "0000", false)
+  end
+
+  @spec request_join_room(String.t()) :: :ok | {:error, term()}
+  def request_join_room(room_name) do
+    #DataService.join_room(room_name)
+  end
+
+  @spec request_leave_room(String.t()) :: :ok | {:error, term()}
+  def request_leave_room(room_name) do
+    #DataService.leave_room(room_name)
+  end
+
 end

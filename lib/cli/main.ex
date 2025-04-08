@@ -9,6 +9,7 @@ defmodule CLI.Main do
 
   alias CLI.{Parser}
 
+  @spec main(any()) :: no_return()
   def main(args) do
     args
     |> Parser.parse_args()

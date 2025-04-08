@@ -9,7 +9,7 @@ defmodule CLI.Parser do
   """
   alias CLI.Request
 
-  @spec parse_args([binary()]) :: atom()
+  @spec parse_args([binary()]) :: no_return()
   def parse_args(args) do
     OptionParser.parse(args,
       switches: [help: :boolean],
@@ -54,13 +54,17 @@ defmodule CLI.Parser do
 
 
 
-
-
-  def handle_parse(["create", room_name]) do
-
-    {:create_room, room_name}
+  def handle_parse(["create", "--user", user_name, password]) do
+    Request.request_create_user(user_name, password)
   end
 
+  def handle_parse(["create", "--room",room_name, is_private? ,password]) do
+    Request.request_create_room(room_name, password, is_private?)
+  end
+
+  def handle_parse(["create", "--room",room_name]) do
+    Request.request_create_room(room_name, :default)
+  end
 
   def handle_parse(["join", room_name]) do
     {:join, room_name}
