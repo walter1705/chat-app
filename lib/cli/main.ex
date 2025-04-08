@@ -39,4 +39,14 @@ defmodule CLI.Main do
     )
     System.halt(2)
   end
+
+  def show_table({:ok, table}) do
+    IO.puts(table)
+    System.halt(2)
+  end
+
+  def show_table({:error, reason}) do
+    IO.puts("Error: #{reason}")
+    System.halt(2)
+  end
 end

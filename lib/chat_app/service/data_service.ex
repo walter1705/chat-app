@@ -1,7 +1,7 @@
 defmodule ChatApp.Service.DataService do
   alias ChatApp.Data.Repo
   require Bcrypt
-  alias DB.Schemas.{User}
+  alias DB.Schemas.{User, ChatRoom}
 
   @moduledoc """
   This module is the service of the application adn contains
@@ -38,6 +38,21 @@ defmodule ChatApp.Service.DataService do
     Repo.all(User)
     |> Enum.map(fn user ->
       user
+      |> Map.from_struct()
+      |> Map.drop([:__meta__])
+    end)
+  end
+
+  @doc """
+  Get all the chat rooms from the table and transform it from its Struct to map
+  return a list of the chat rooms (maps):
+  %{id: ..., name: ..., hash: ..., is_private: ...,created_at: .., updated_at: ...}
+  """
+  @spec get_rooms() :: list()
+  def get_rooms() do
+    Repo.all(ChatRoom)
+    |> Enum.map(fn room ->
+      room
       |> Map.from_struct()
       |> Map.drop([:__meta__])
     end)
