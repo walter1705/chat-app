@@ -38,30 +38,18 @@ defmodule ChatApp.Service.DataService do
         user -> IO.inspect(user, label: "user found")
       end
   """
-  @spec get_user(String.t()) :: %{} | nil
+  @spec get_user(String.t()) :: nil | %{}
   def get_user(username) do
     Repo.get_by(User, username: username)
-  end
+    |> case do
+      user=%User{} ->
+        user
+        |> Map.from_struct()
+        |> Map.drop([:__meta__])
 
-  @doc """
-  Check if a user exists in the table using get_user/1 method.
-
-  #example:
-
-    iex>  user_exists?("username")
-    true
-
-    iex>  user_exists?("usasdme")
-    false
-  """
-
-  @spec user_exists?(String.t()) :: boolean()
-  def user_exists?(username) do
-    get_user(username)
-      |> case do
-        nil -> false
-        _ -> true
-      end
+      nil ->
+        nil
+    end
   end
 
   @doc """
