@@ -29,6 +29,42 @@ defmodule ChatApp.Service.DataService do
   end
 
   @doc """
+  Get a user from the table by username
+
+  #example:
+
+    iex> case Repo.get_by(User, username: "username") do
+        nil -> IO.puts("User not found")
+        user -> IO.inspect(user, label: "user found")
+      end
+  """
+  @spec get_user(String.t()) :: %{} | nil
+  def get_user(username) do
+    Repo.get_by(User, username: username)
+  end
+
+  @doc """
+  Check if a user exists in the table using get_user/1 method.
+
+  #example:
+
+    iex>  user_exists?("username")
+    true
+
+    iex>  user_exists?("usasdme")
+    false
+  """
+
+  @spec user_exists?(String.t()) :: boolean()
+  def user_exists?(username) do
+    get_user(username)
+      |> case do
+        nil -> false
+        _ -> true
+      end
+  end
+
+  @doc """
   Get all the user from the table and transform it from structu User to map
   return a list of the users (maps):
   %{username: ..., hash_password: ..., created_at: .., updated_at: ...}

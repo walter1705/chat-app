@@ -45,13 +45,13 @@ defmodule CLI.Request do
   def request_create_room(room_name, :default) do
     DataService.create_room(room_name, "0000", false)
   end
-
-  @spec request_join_room(String.t()) :: :ok | {:error, term()}
+  #for the
+  @spec request_join_room(String.t()) :: {:ok, term()} | {:error, term()}
   def request_join_room(room_name) do
     #DataService.join_room(room_name)
   end
 
-  @spec request_leave_room(String.t()) :: :ok | {:error, term()}
+  @spec request_leave_room(String.t()) :: {:ok, term()} | {:error, term()}
   def request_leave_room(room_name) do
     #DataService.leave_room(room_name)
   end
