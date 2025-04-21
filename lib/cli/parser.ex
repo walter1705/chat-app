@@ -8,6 +8,7 @@ defmodule CLI.Parser do
   they are valid or not.
   Also handle most of the request of the module request.
   """
+  alias CLI.Main
   alias CLI.Request
 
   @spec parse_args([binary()]) :: no_return()
@@ -90,5 +91,19 @@ defmodule CLI.Parser do
   # def handle_parse(arg) do
   # TODO ACTIONS COMMAND NEED TO HAVE THEIR OWN CLAUSE
   # end
+  @moduledoc """
+  Handle the creation of an entity.
+  """
+  def handle_creation({:ok, user}) do
+    """
+     User #{user.username} created.
+    """
+    |> Main.show_creation()
+  end
+
+  def handle_creation({:error, changeset}) do
+    changeset
+    |> Main.show_creation()
+  end
 
 end

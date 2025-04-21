@@ -7,7 +7,7 @@ defmodule CLI.Main do
   System halt (0) may be only used for pure CLI  apps watch out dev.
   """
 
-  alias CLI.{Parser}
+  alias CLI.{Parser, Util}
 
   @spec main(any()) :: no_return()
   def main(args) do
@@ -16,34 +16,42 @@ defmodule CLI.Main do
   end
 
   @doc """
-  Show the available commands for help..
+  Show the available commands for help.
   """
   def show_help_commands() do
-    IO.puts("""
-    Type
-
-     ./chat_app help
-    or
-     ./chat_app -h
-
-     For help sucker.
-    """)
+    Util.help_commands()
+    |> Util.print_message()
   end
-
+  @doc """
+  Show the available `list` command options
+  """
   def available_list_options() do
-    IO.puts("""
-    list command options:
-    ./chat_app list users  <--- will show all the users.
-    ./chat_app list rooms  <--- will show all the public chatrooms.
-    """
-    )
+    Util.list_options()
+    |> Util.print_message()
   end
 
   def show_table({:ok, table}) do
-    IO.puts(table)
+    table
+    |> Util.print_message()
   end
 
   def show_table({:error, reason}) do
-    IO.puts("Error: #{reason}")
+    "Error: #{reason}"
+    |> Util.print_message()
   end
+  @doc """
+  Show the creation of a entity.
+  Error or sucessfull.
+  """
+  def show_creation(message) when is_binary(message) do
+    message
+    |> Util.print_message()
+  end
+
+  def show_creation(changeset) when is_struct(changeset) do
+    changeset
+    |> Util.handle_changeset()
+  end
+
+
 end
