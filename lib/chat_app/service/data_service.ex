@@ -92,9 +92,10 @@ defmodule ChatApp.Service.DataService do
   return a list of the chat rooms (maps):
   %{id: ..., name: ..., hash: ..., is_private: ...,created_at: .., updated_at: ...}
   """
-  @spec get_rooms() :: list()
-  def get_rooms() do
+  @spec get_public_rooms() :: list()
+  def get_public_rooms() do
     Repo.all(ChatRoom)
+    |> Enum.filter(& &1.is_private == false)
     |> Enum.map(fn room ->
       room
       |> Map.from_struct()

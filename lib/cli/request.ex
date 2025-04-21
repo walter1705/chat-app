@@ -12,10 +12,16 @@ defmodule CLI.Request do
     Main.available_list_options()
   end
 
+  @doc """
+  Request the outpout of the help commands.
+  """
   def request_for_help() do
     Main.show_help_commands()
   end
 
+  @doc """
+  Request the outpout of all the users.
+  """
   @spec request_list_all_users() :: no_return()
   def request_list_all_users() do
     DataService.get_users()
@@ -24,16 +30,23 @@ defmodule CLI.Request do
     |> Main.show_table()
   end
 
+  @doc """
+  Request the output of all the available public rooms.
+  """
   def request_list_all_rooms() do
-    DataService.get_rooms()
+    DataService.get_public_rooms()
     |> Formater.list_of_maps_to_list_of_list()
     |> Formater.format_room_list()
     |> Main.show_table()
   end
 
+  @doc """
+    Request the creation of an user and keep it in the database.
+  """
   @spec request_create_user(String.t(), String.t()) :: {:ok, String.t()}  | {:error, term()}
   def request_create_user(username, password) do
     DataService.create_user(username, password)
+    |> Parser.handle_creation
   end
 
   @spec request_create_room(String.t(), String.t(), boolean()) :: {:ok, String.t()}  | {:error, term()}

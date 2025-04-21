@@ -6,6 +6,7 @@ defmodule CLI.Parser do
   @doc """
   Parse the args received from the user and check if
   they are valid or not.
+  Also handle most of the request of the module request.
   """
   alias CLI.Request
 
@@ -89,4 +90,5 @@ defmodule CLI.Parser do
   # def handle_parse(arg) do
   # TODO ACTIONS COMMAND NEED TO HAVE THEIR OWN CLAUSE
   # end
+
 end
