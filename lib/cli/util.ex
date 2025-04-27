@@ -18,9 +18,10 @@ defmodule CLI.Util do
   @doc """
   Prints a message.
   """
-  @spec print_message(String.t()) :: none()
+  @spec print_message(String.t()) :: no_return()
   def print_message(message) do
     IO.puts(message)
+    System.halt(2)
   end
 
   @doc """
@@ -38,8 +39,9 @@ defmodule CLI.Util do
   @doc """
   Handle the changeset print.
   """
-  @spec handle_changeset(struct()) :: none()
+  @spec handle_changeset(struct()) :: no_return()
   def handle_changeset(changeset) do
     IO.inspect(changeset.errors, label: "Error")
+    System.halt(2)
   end
 end

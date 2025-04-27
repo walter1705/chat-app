@@ -3,7 +3,7 @@ defmodule CLI.Request do
   Handles the users input/request from the cli.
   """
   alias ChatApp.Service.DataService
-  alias CLI.{Main, Formater}
+  alias CLI.{Main, Formater, Parser}
 
   @doc """
   List the available options of the command 'list'.
@@ -46,7 +46,7 @@ defmodule CLI.Request do
   @spec request_create_user(String.t(), String.t()) :: {:ok, String.t()}  | {:error, term()}
   def request_create_user(username, password) do
     DataService.create_user(username, password)
-    |> Parser.handle_creation
+    |> Parser.handle_creation()
   end
 
   @spec request_create_room(String.t(), String.t(), boolean()) :: {:ok, String.t()}  | {:error, term()}

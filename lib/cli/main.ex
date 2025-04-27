@@ -2,8 +2,9 @@ defmodule CLI.Main do
   @moduledoc """
   Principal comunication module between the user and the app external API.
 
-  WARNING:
 
+
+  WARNING:
   System halt (0) may be only used for pure CLI  apps watch out dev.
   """
 
@@ -18,6 +19,7 @@ defmodule CLI.Main do
   @doc """
   Show the available commands for help.
   """
+  @spec show_help_commands() :: no_return()
   def show_help_commands() do
     Util.help_commands()
     |> Util.print_message()
@@ -25,11 +27,13 @@ defmodule CLI.Main do
   @doc """
   Show the available `list` command options
   """
+  @spec available_list_options() :: no_return()
   def available_list_options() do
     Util.list_options()
     |> Util.print_message()
   end
 
+  @spec show_table(any()) :: no_return()
   def show_table({:ok, table}) do
     table
     |> Util.print_message()
@@ -43,6 +47,7 @@ defmodule CLI.Main do
   Show the creation of a entity.
   Error or sucessfull.
   """
+  @spec show_creation(any()) :: no_return()
   def show_creation(message) when is_binary(message) do
     message
     |> Util.print_message()

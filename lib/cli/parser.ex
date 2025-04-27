@@ -91,9 +91,10 @@ defmodule CLI.Parser do
   # def handle_parse(arg) do
   # TODO ACTIONS COMMAND NEED TO HAVE THEIR OWN CLAUSE
   # end
-  @moduledoc """
+  @doc """
   Handle the creation of an entity.
   """
+  @spec handle_creation(any()) :: no_return()
   def handle_creation({:ok, user}) do
     """
      User #{user.username} created.
