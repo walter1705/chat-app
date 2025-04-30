@@ -43,7 +43,7 @@ defmodule CLI.Request do
   @doc """
     Request the creation of an user and keep it in the database.
   """
-  @spec request_create_user(String.t(), String.t()) :: {:ok, String.t()}  | {:error, term()}
+  @spec request_create_user(String.t(), String.t()) :: no_return()
   def request_create_user(username, password) do
     DataService.create_user(username, password)
     |> Parser.handle_creation()

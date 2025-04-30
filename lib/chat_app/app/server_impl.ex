@@ -1,7 +1,7 @@
 defmodule ChatApp.App.ServerImpl do
   use GenServer
   @moduledoc """
-  This module implements the itnernal implementation of the server.
+  This module implements the internal implementation of the server.
   """
 
   @doc """

@@ -4,6 +4,11 @@ defmodule ChatApp.App.Server do
   We decouple some of ugly spaghetti examples and make it component like.
   """
 
+  @doc """
+  Initialize the server (unique callback made by the OTP module.)
+  """
+
+
 
   # TODO  def terminate(reason, state) do
 end
