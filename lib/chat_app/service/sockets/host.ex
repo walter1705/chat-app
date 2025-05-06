@@ -13,4 +13,6 @@ defmodule ChatApp.Service.Sockets.Host do
   - Ensure the port is not already in use by another service.
   - This server is intended for local testing and simple chat applications.
   """
+
+
 end

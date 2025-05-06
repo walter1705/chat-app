@@ -8,7 +8,5 @@ defmodule ChatApp.App.Server do
   Initialize the server (unique callback made by the OTP module.)
   """
 
-
-
   # TODO  def terminate(reason, state) do
 end
