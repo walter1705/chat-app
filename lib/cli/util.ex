@@ -43,5 +43,6 @@ defmodule CLI.Util do
   def handle_changeset(changeset) do
     IO.inspect(changeset.errors, label: "Error")
     System.halt(2)
+    IO.puts(".....")
   end
 end
