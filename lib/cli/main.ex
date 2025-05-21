@@ -43,6 +43,7 @@ defmodule CLI.Main do
     "Error: #{reason}"
     |> Util.print_message()
   end
+
   @doc """
   Show the creation of a entity.
   Error or sucessfull.

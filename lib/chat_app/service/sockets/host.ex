@@ -14,5 +14,5 @@ defmodule ChatApp.Service.Sockets.Host do
   - This server is intended for local testing and simple chat applications.
   """
 
-
+  
 end
