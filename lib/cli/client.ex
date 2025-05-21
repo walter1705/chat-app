@@ -13,6 +13,7 @@ defmodule CLI.Client do
     handle_parse(input)
   end
 
+
   @doc """
   Handles the commands.
   Example:
@@ -65,7 +66,6 @@ defmodule CLI.Client do
     Request.request_join_room(room_name)
     listen_for_commands()
   end
-
 
   def handle_parse(["--help"]) do
     Request.request_for_help()

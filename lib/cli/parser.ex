@@ -8,8 +8,7 @@ defmodule CLI.Parser do
   they are valid or not.
   Also handle most of the request of the module request.
   """
-  alias CLI.Main
-  alias CLI.Request
+  alias CLI.{Client, Request, Main}
 
   @spec parse_args([binary()]) :: no_return()
   def parse_args(args) do
@@ -22,8 +21,9 @@ defmodule CLI.Parser do
   end
 
 
+   @spec handle_parse(any()) :: no_return()
    def handle_parse(["client"]) do
-    Request.request_list_all_users()
+    Client.listen_for_commands()
   end
 
    def handle_parse(["host"]) do

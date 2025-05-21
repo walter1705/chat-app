@@ -8,6 +8,7 @@ defmodule CLI.Request do
   @doc """
   List the available options of the command 'list'.
   """
+  @spec list_command_available_options() :: no_return()
   def list_command_available_options() do
     Main.available_list_options()
   end
