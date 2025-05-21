@@ -13,4 +13,5 @@ defmodule ChatApp.Service.Sockets.Client do
   - Handle disconnections gracefully in the client application.
   """
 
+
 end
