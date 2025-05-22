@@ -21,12 +21,12 @@ defmodule CLI.Parser do
     |> handle_parse()
   end
 
-  def handle_parse(["host"]) do
+  def handle_parse(["host", ip]) do
     Request.request_list_all_users() #TODO
   end
 
   @spec handle_parse(any()) :: no_return()
-  def handle_parse(["client", username, password]) do
+  def handle_parse(["client", username, password, ip]) do
     case Request.request_log_in(username, password) do
       {:ok, user} ->
         Util.welcome_message(user.username)

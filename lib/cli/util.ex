@@ -32,7 +32,7 @@ defmodule CLI.Util do
     """
     list command options:
     ./chat_app host <ip> <-- To initiate a local server.
-    ./chat_app client <username> <password> <-- To initiate a client.
+    ./chat_app client <username> <password> <ip> <-- To initiate n connect a client.
     ./chat_app register <username> <password> <-- To register a new user.
 
 

@@ -16,6 +16,7 @@ defmodule CLI.Request do
   @doc """
   Request the outpout of the help commands.
   """
+  @spec request_for_help() :: no_return()
   def request_for_help() do
     Main.show_help_commands()
   end
@@ -47,7 +48,6 @@ defmodule CLI.Request do
   @spec request_create_user(String.t(), String.t()) :: no_return()
   def request_create_user(username, password) do
     DataService.create_user(username, password)
-    |> Parser.handle_creation()
   end
 
   @spec request_create_room(String.t(), String.t(), boolean()) :: {:ok, String.t()}  | {:error, term()}
