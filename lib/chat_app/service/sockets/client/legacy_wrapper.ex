@@ -54,7 +54,7 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
   def start(ip, opts \\ []) do
     case ensure_node(ip, opts) do
       :ok ->
-        Client.start(ip)
+        Api.start_link(ip)
       {:error, reason} ->
         {:error, {:node_creation_failed, reason}}
     end
@@ -68,11 +68,10 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
     case start_link(ip, opts) do
       {:ok, _pid} ->
         Util.print_message("Client started successfully. Waiting for :end message...")
-        # Mantener el proceso principal vivo hasta recibir :end
         receive do
           :end ->
             Util.print_message("Received :end signal, shutting down...")
-            Client.stop(:chat_app)
+            Api.stop()
             :ok
         end
       {:error, reason} ->

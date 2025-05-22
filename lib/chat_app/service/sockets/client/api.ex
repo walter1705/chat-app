@@ -5,6 +5,7 @@ defmodule ChatApp.Service.Sockets.Client.Api do
 
   alias ChatApp.Service.Sockets.Client.Server
 
+  @service_name :clientnode@client
 
 
   @doc """
@@ -12,7 +13,7 @@ defmodule ChatApp.Service.Sockets.Client.Api do
   """
   @spec start_link(String.t()) :: GenServer.on_start()
   def start_link(ip) do
-    GenServer.start_link(Server, ip, name: @service_name)
+    GenServer.start_link(Server, ip, name: :client_node)
   end
 
   @doc """

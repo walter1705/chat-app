@@ -25,6 +25,7 @@ defmodule ChatApp.Service.Sockets.Client.Server do
 
   use GenServer
 
+  alias ChatApp.Service.Sockets.Client.Server
   alias ChatApp.Service.Util
 
   #@service_name :chat_app
@@ -32,6 +33,8 @@ defmodule ChatApp.Service.Sockets.Client.Server do
   @reconnect_interval 5000
 
   @impl true
+
+  @spec init(String.t()) :: {:ok, %Server{}}
   def init(ip) do
     Util.print_message("Initializing chat app client...")
 
@@ -80,25 +83,27 @@ defmodule ChatApp.Service.Sockets.Client.Server do
   @impl true
   def handle_info(:connect, %{remote_node: remote_node} = state) do
     case Node.connect(String.to_atom(remote_node)) do
+      false ->
+        Util.print_message("Failed to connect to #{remote_node}. Retrying in #{@reconnect_interval}ms...")
+        timer = schedule_reconnect()
+        {:noreply, %{state | connected: false, reconnect_timer: timer}}
       true ->
         Util.print_message("Successfully connected to #{remote_node}")
         cancel_reconnect_timer(state)
         {:noreply, %{state | connected: true, reconnect_timer: nil}}
 
-      false ->
-        Util.print_message("Failed to connect to #{remote_node}. Retrying in #{@reconnect_interval}ms...")
-        timer = schedule_reconnect()
-        {:noreply, %{state | connected: false, reconnect_timer: timer}}
+
     end
   end
 
+  @doc """
+  Tries to reconnect to the server after a timeout.
+  """
   def handle_info(:reconnect_timeout, state) do
     send(self(), :connect)
     {:noreply, %{state | reconnect_timer: nil}}
   end
-  @doc """
-  Handles disconnections from the server.
-  """
+
   @impl true
   def handle_info({:nodedown, node}, %{remote_node: remote_node} = state) do
     if Atom.to_string(node) == remote_node do
@@ -119,7 +124,8 @@ defmodule ChatApp.Service.Sockets.Client.Server do
     {:noreply, state}
   end
 
-  @impl GenServer
+  @impl true
+  @spec terminate(any(), %Server{}) :: :ok
   def terminate(reason, %{reconnect_timer: timer}) do
     cancel_reconnect_timer(%{reconnect_timer: timer})
     Util.print_message("Client shutting down: #{inspect(reason)}")
