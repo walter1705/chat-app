@@ -8,7 +8,8 @@ defmodule CLI.Parser do
   they are valid or not.
   Also handle most of the request of the module request.
   """
-  alias CLI.{Client, Request, Main}
+  alias DB.Schemas.User
+  alias CLI.{Client, Request, Main, Util}
 
   @spec parse_args([binary()]) :: no_return()
   def parse_args(args) do
@@ -20,14 +21,28 @@ defmodule CLI.Parser do
     |> handle_parse()
   end
 
-
-   @spec handle_parse(any()) :: no_return()
-   def handle_parse(["client"]) do
-    Client.listen_for_commands()
+  def handle_parse(["host"]) do
+    Request.request_list_all_users() #TODO
   end
 
-   def handle_parse(["host"]) do
-    Request.request_list_all_users()
+  @spec handle_parse(any()) :: no_return()
+  def handle_parse(["client", username, password]) do
+    case Request.request_log_in(username, password) do
+      {:ok, user} ->
+        Util.welcome_message(user.username)
+          |> Util.print_message()
+        Client.listen_for_commands()
+      {:error, message} ->
+        message
+          |> Util.print_message()
+        Util.client_log_in_help()
+          |> Util.print_message()
+    end
+  end
+
+  def handle_parse(["register", username, password]) do
+    user_created? = Request.request_create_user(username, password)
+    handle_creation(user_created?)
   end
 
   # def handle_parse(arg) do
@@ -37,7 +52,7 @@ defmodule CLI.Parser do
   Handle the creation of an entity.
   """
   @spec handle_creation(any()) :: no_return()
-  def handle_creation({:ok, user}) do
+  def handle_creation({:ok, %User{}=user}) do
     """
      User #{user.username} created.
     """
@@ -48,5 +63,4 @@ defmodule CLI.Parser do
     changeset
     |> Main.show_creation()
   end
-
 end

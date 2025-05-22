@@ -2,7 +2,7 @@ defmodule CLI.Request do
   @moduledoc """
   Handles the users input/request from the cli.
   """
-  alias ChatApp.Service.DataService
+  alias ChatApp.Service.{DataService, AuthService}
   alias CLI.{Main, Formater, Parser}
 
   @doc """
@@ -68,6 +68,10 @@ defmodule CLI.Request do
   @spec request_leave_room(String.t()) :: {:ok, term()} | {:error, term()}
   def request_leave_room(room_name) do
     #DataService.leave_room(room_name)
+  end
+
+  def request_log_in(username, password) do
+    AuthService.login(username, password)
   end
 
 end
