@@ -9,23 +9,23 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
   - Mantener compatibilidad con la API original
 
   ## Uso
-  ```elixir
-  # Iniciar cliente con creación automática de nodo
+  # Start client with automatic node creation
   {:ok, pid} = ChatApp.Service.Sockets.ClientWrapper.start_link("192.168.1.100")
 
-  # Con opciones personalizadas
+  # Start client with automatic node creation
+  #with personalized options
   {:ok, pid} = ChatApp.Service.Sockets.ClientWrapper.start_link("192.168.1.100", [
     node_name: "mi_cliente@192.168.1.100",
     name_type: :longnames,
     create_node: true
   ])
 
-  # API compatible
+  # API
   ChatApp.Service.Sockets.ClientWrapper.main("192.168.1.100")
   ```
   """
 
-  alias ChatApp.Service.Sockets.Client
+  alias ChatApp.Service.Sockets.Client.{Api, Server}
   alias ChatApp.Service.Util
 
   @type node_opts :: [
@@ -41,7 +41,7 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
   def start_link(ip, opts \\ []) do
     case ensure_node(ip, opts) do
       :ok ->
-        Client.start_link(ip)
+        Api.start_link(ip)
       {:error, reason} ->
         {:error, {:node_creation_failed, reason}}
     end

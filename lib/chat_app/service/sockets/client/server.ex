@@ -14,29 +14,8 @@ defmodule ChatApp.Service.Sockets.Client.Server do
   # Iniciar el cliente
   {:ok, pid} = ChatApp.Service.Sockets.Client.start_link("192.168.1.100")
 
-  # Enviar mensaje
-  ChatApp.Service.Sockets.Client.send_message(pid, "Hola servidor!")
-
-  # Obtener estado de conexión
-  ChatApp.Service.Sockets.Client.connection_status(pid)
-
-  # Reconectar si es necesario
-  ChatApp.Service.Sockets.Client.reconnect(pid)
-
-  # Detener cliente
-  ChatApp.Service.Sockets.Client.stop(pid)
-  ```
   """
 
-  use GenServer
-
-  alias ChatApp.Service.Util
-
-  @service_name :chat_app
-  @remote_node_prefix "nodoservidor"
-  @reconnect_interval 5000
-
-  # Estructura del state
   defstruct [
     :remote_node,
     :ip,
@@ -44,63 +23,17 @@ defmodule ChatApp.Service.Sockets.Client.Server do
     :reconnect_timer
   ]
 
-  ## API Pública
+  use GenServer
 
-  @doc """
-  Inicia el cliente GenServer
-  """
-  @spec start_link(String.t()) :: GenServer.on_start()
-  def start_link(ip) do
-    GenServer.start_link(__MODULE__, ip, name: @service_name)
-  end
+  alias ChatApp.Service.Util
 
-  @doc """
-  Starts the client GenServer
-  """
+  #@service_name :chat_app
+  @remote_node_prefix "servernode"
+  @reconnect_interval 5000
 
-
-  @spec start(String.t()) :: GenServer.on_start()
-  def start(ip) do
-    GenServer.start(__MODULE__, ip, name: @service_name)
-  end
-
-  @doc """
-  Envía un mensaje al servidor remoto
-  """
-  @spec send_message(GenServer.server(), any()) :: :ok | {:error, :not_connected}
-  def send_message(server, message) do
-    GenServer.call(server, {:send_message, message})
-  end
-
-  @doc """
-  Obtiene el estado de la conexión
-  """
-  @spec connection_status(GenServer.server()) :: :connected | :disconnected
-  def connection_status(server) do
-    GenServer.call(server, :connection_status)
-  end
-
-  @doc """
-  Fuerza una reconexión
-  """
-  @spec reconnect(GenServer.server()) :: :ok
-  def reconnect(server) do
-    GenServer.cast(server, :reconnect)
-  end
-
-  @doc """
-  Detiene el cliente gracefully
-  """
-  @spec stop(GenServer.server()) :: :ok
-  def stop(server) do
-    GenServer.stop(server, :normal)
-  end
-
-  ## Callbacks de GenServer
-
-  @impl GenServer
+  @impl true
   def init(ip) do
-    Util.print_message("Initializing chat client...")
+    Util.print_message("Initializing chat app client...")
 
     remote_node = "#{@remote_node_prefix}@#{ip}"
 
@@ -117,13 +50,12 @@ defmodule ChatApp.Service.Sockets.Client.Server do
   end
 
   @impl GenServer
-  def handle_call({:send_message, message}, _from, %{connected: false} = state) do
+  def handle_call({:send_message, _message}, _from, %{connected: false} = state) do
     {:reply, {:error, :not_connected}, state}
   end
 
   def handle_call({:send_message, message}, _from, %{connected: true, remote_node: remote_node} = state) do
     try do
-      # Enviar mensaje al proceso remoto registrado
       send({:chat_server, String.to_atom(remote_node)}, {:client_message, node(), message})
       Util.print_message("Message sent: #{inspect(message)}")
       {:reply, :ok, state}
@@ -139,18 +71,17 @@ defmodule ChatApp.Service.Sockets.Client.Server do
     {:reply, status, state}
   end
 
-  @impl GenServer
+  @impl true
   def handle_cast(:reconnect, state) do
     send(self(), :connect)
     {:noreply, state}
   end
 
-  @impl GenServer
+  @impl true
   def handle_info(:connect, %{remote_node: remote_node} = state) do
     case Node.connect(String.to_atom(remote_node)) do
       true ->
         Util.print_message("Successfully connected to #{remote_node}")
-        # Cancelar timer de reconexión si existe
         cancel_reconnect_timer(state)
         {:noreply, %{state | connected: true, reconnect_timer: nil}}
 
@@ -165,14 +96,10 @@ defmodule ChatApp.Service.Sockets.Client.Server do
     send(self(), :connect)
     {:noreply, %{state | reconnect_timer: nil}}
   end
-
-  # Manejar mensajes del servidor
-  def handle_info({:server_message, message}, state) do
-    Util.print_message("Received from server: #{inspect(message)}")
-    {:noreply, state}
-  end
-
-  # Manejar desconexiones de nodo
+  @doc """
+  Handles disconnections from the server.
+  """
+  @impl true
   def handle_info({:nodedown, node}, %{remote_node: remote_node} = state) do
     if Atom.to_string(node) == remote_node do
       Util.print_message("Connection to #{remote_node} lost. Attempting to reconnect...")
