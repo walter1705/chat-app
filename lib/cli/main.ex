@@ -10,9 +10,11 @@ defmodule CLI.Main do
 
   alias CLI.{Parser, Util}
 
-  @spec main(any()) :: no_return()
-  def main(args) do
-    args
+  @spec main() :: no_return()
+  def main() do
+    arg = System.argv()
+    IO.inspect(arg, label: "Argument")
+    arg
     |> Parser.parse_args()
   end
 

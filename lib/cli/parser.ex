@@ -22,7 +22,8 @@ defmodule CLI.Parser do
   end
 
   def handle_parse(["host", ip]) do
-    Request.request_list_all_users() #TODO
+    # TODO
+    Request.request_list_all_users()
   end
 
   @spec handle_parse(any()) :: no_return()
@@ -30,11 +31,13 @@ defmodule CLI.Parser do
     case Request.request_log_in(username, password) do
       {:ok, user} ->
         try_connect_user(user, ip)
+
       {:error, message} ->
         message
-          |> Util.print_message()
+        |> Util.print_message()
+
         Util.client_log_in_help()
-          |> Util.print_message()
+        |> Util.print_message()
     end
   end
 
@@ -43,23 +46,39 @@ defmodule CLI.Parser do
     handle_creation(user_created?)
   end
 
-  @spec try_connect_user(any(), any()) ::no_return()
-  def try_connect_user(user, ip) do
-    case Request.try_connect_user(user, ip) do
-      {:ok, _} -> Util.welcome_message(user.username)
-        |> Util.print_message()
-      {:error, message} -> Util.client_log_in_help() <> message
-        |> Util.print_message( )
-    end
-
+  def handle_parse(["help"]) do
+    Util.list_options()
+    |> Util.print_message()
   end
 
+  def handle_parse("-h") do
+    Util.list_options()
+    |> Util.print_message()
+  end
+
+  def handle_parse(_) do
+    Util.help_commands()
+    |> Util.print_message()
+  end
+
+  @spec try_connect_user(any(), any()) :: no_return()
+  def try_connect_user(user, ip) do
+    case Request.try_connect_user(user, ip) do
+      {:ok, _} ->
+        Util.welcome_message(user.username)
+        |> Util.print_message()
+
+      {:error, message} ->
+        (Util.client_log_in_help() <> message)
+        |> Util.print_message()
+    end
+  end
 
   @doc """
   Handle the creation of an entity.
   """
   @spec handle_creation(any()) :: no_return()
-  def handle_creation({:ok, %User{}=user}) do
+  def handle_creation({:ok, %User{} = user}) do
     """
      User #{user.username} created.
     """

@@ -27,7 +27,10 @@ defmodule CLI.Request do
   """
   @spec request_list_all_users() :: no_return()
   def request_list_all_users() do
-    DataService.get_users()
+    rqUsers= Task.async(fn -> DataService.get_users() end)
+    users = Task.await(rqUsers)
+
+    users
     |> Formater.list_of_maps_to_list_of_list()
     |> Formater.format_user_list()
     |> Main.show_table()
