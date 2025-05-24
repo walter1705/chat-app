@@ -28,8 +28,6 @@ defmodule ChatApp.Service.Sockets.Server.Host do
   ]
 
   use GenServer
-
-  alias ChatApp.Service.Sockets.Client.Server
   alias ChatApp.Service.Util
 
   @server_name :chat_server
@@ -41,10 +39,8 @@ defmodule ChatApp.Service.Sockets.Server.Host do
   def init([]) do
     Util.print_message("Starting chat server...")
 
-    # Registrar el proceso con el nombre del servidor
     Process.register(self(), @server_name)
 
-    # Monitorear nodos para detectar desconexiones
     :net_kernel.monitor_nodes(true)
 
     state = %__MODULE__{
@@ -83,8 +79,6 @@ defmodule ChatApp.Service.Sockets.Server.Host do
 
   @impl true
   def handle_cast({:broadcast, message}, state) do
-    Util.print_message("Broadcasting message to all clients: #{inspect(message)}")
-
     # Enviar mensaje a todos los clientes conectados
     active_clients =
       state.connected_clients

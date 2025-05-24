@@ -5,9 +5,6 @@ defmodule ChatApp.Service.Sockets.Client.Api do
 
   alias ChatApp.Service.Sockets.Client.Server
 
-  @service_name :clientnode@client
-
-
   @doc """
   Initialize the client.
   """
