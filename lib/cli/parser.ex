@@ -29,9 +29,7 @@ defmodule CLI.Parser do
   def handle_parse(["client", username, password, ip]) do
     case Request.request_log_in(username, password) do
       {:ok, user} ->
-        Util.welcome_message(user.username)
-          |> Util.print_message()
-        Client.listen_for_commands()
+        try_connect_user(user, ip)
       {:error, message} ->
         message
           |> Util.print_message()
@@ -45,9 +43,18 @@ defmodule CLI.Parser do
     handle_creation(user_created?)
   end
 
-  # def handle_parse(arg) do
-  # TODO ACTIONS COMMAND NEED TO HAVE THEIR OWN CLAUSE
-  # end
+  @spec try_connect_user(any(), any()) ::no_return()
+  def try_connect_user(user, ip) do
+    case Request.try_connect_user(user, ip) do
+      {:ok, _} -> Util.welcome_message(user.username)
+        |> Util.print_message()
+      {:error, message} -> Util.client_log_in_help() <> message
+        |> Util.print_message( )
+    end
+
+  end
+
+
   @doc """
   Handle the creation of an entity.
   """

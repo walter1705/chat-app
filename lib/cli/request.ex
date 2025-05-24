@@ -4,6 +4,7 @@ defmodule CLI.Request do
   """
   alias ChatApp.Service.{DataService, AuthService}
   alias CLI.{Main, Formater, Parser}
+  alias ChatApp.Service.Sockets.Client.LegacyWrapper
 
   @doc """
   List the available options of the command 'list'.
@@ -74,4 +75,7 @@ defmodule CLI.Request do
     AuthService.login(username, password)
   end
 
+  def try_connect_user(_user, ip) do
+    LegacyWrapper.start_link(ip)
+  end
 end

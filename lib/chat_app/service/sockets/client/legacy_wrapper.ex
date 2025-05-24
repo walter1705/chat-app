@@ -48,19 +48,6 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
   end
 
   @doc """
-  Inicia el cliente sin link
-  """
-  @spec start(String.t(), node_opts()) :: GenServer.on_start()
-  def start(ip, opts \\ []) do
-    case ensure_node(ip, opts) do
-      :ok ->
-        Api.start_link(ip)
-      {:error, reason} ->
-        {:error, {:node_creation_failed, reason}}
-    end
-  end
-
-  @doc """
   Función main compatible con la API original
   """
   @spec main(String.t(), node_opts()) :: :ok
