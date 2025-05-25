@@ -2,7 +2,8 @@ defmodule ChatApp.Service.Util do
   @moduledoc """
   This module provides utility functions for the application.
   """
-  @cookie_path "sockets/cookie"
+  @cookie_path "lib/chat_app/service/sockets/cookie.txt"
+
 
   @spec print_message_terminate(String.t()) :: no_return()
   def print_message_terminate(message) do
@@ -31,8 +32,8 @@ defmodule ChatApp.Service.Util do
     |> String.to_atom()
   end
 
-  @spec handle_write(any()) :: no_return()
-  def handle_write({:error, reason}) do
+  @spec handle_read(any()) :: no_return()
+  def handle_read({:error, reason}) do
     print_message_terminate("Failed to write cookie: #{inspect(reason)}")
   end
 end

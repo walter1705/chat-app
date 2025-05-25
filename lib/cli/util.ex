@@ -7,11 +7,11 @@ defmodule CLI.Util do
     """
     Type
 
-     ./chat_app help
+     mix run -e "CLI.Main.main()" -- help
     or
-     ./chat_app -h
+     mix run -e "CLI.Main.main()" -- -h
 
-     For help sucker.
+     For help.
     """
   end
 
@@ -31,16 +31,14 @@ defmodule CLI.Util do
   def list_options() do
     """
     list command options:
-    ./chat_app host <ip> <-- To initiate a local server.
-    ./chat_app client <username> <password> <ip> <-- To initiate n connect a client.
-    ./chat_app register <username> <password> <-- To register a new user.
+    mix run -e "CLI.Main.main()" -- host <ip>
+    ^^^ To initiate a local server.
 
+    mix run -e "CLI.Main.main()" -- client <username> <password> <ip>
+    ^^^ To initiate n connect a client.
 
-
-
-
-    ./chat_app list users  <-- will show all the users.
-    ./chat_app list rooms  <-- will show all the public chatrooms.
+    mix run -e "CLI.Main.main()" -- register <username> <password>
+    ^^^ To register a new user.
 
     """
   end

@@ -1,69 +1,62 @@
 defmodule ChatApp.Service.Sockets.Client.Api do
   @moduledoc """
-  Public API of the client socket side.
+  Public API for the client socket side using a plain process instead of GenServer.
   """
 
   alias ChatApp.Service.Sockets.Client.Server
 
   @doc """
-  Initialize the client.
+  Starts the client process linked to the current process.
   """
-  @spec start_link(String.t()) :: GenServer.on_start()
+  @spec start_link(String.t()) :: pid()
   def start_link(ip) do
-    GenServer.start_link(Server, ip, name: :client_node)
+    Server.start(ip)
   end
 
   @doc """
-  Envía un mensaje al servidor remoto
+  Sends a message to the remote server process.
+
+  Returns :ok immediately; the client logs errors internally.
   """
-  @spec send_message(GenServer.server(), any()) :: :ok | {:error, :not_connected}
-  def send_message(server, message) do
-    GenServer.call(server, {:send_message, message})
+  @spec send_message(pid(), any()) :: :ok
+  def send_message(client_pid, message) when is_pid(client_pid) do
+    send(client_pid, {:send_message, message})
+    :ok
   end
 
   @doc """
-  Obtiene el estado completo del cliente
+  Requests the connection status from the client process.
+
+  This example assumes the client process would need to be extended
+  to support status requests and replies.
   """
-  @spec get_state() :: map()
-  def get_state() do
-    GenServer.call(Server, :get_state)
+  @spec connection_status(pid()) :: :connected | :disconnected | :unknown
+  def connection_status(client_pid) when is_pid(client_pid) do
+    ref = make_ref()
+    send(client_pid, {:get_status, self(), ref})
+
+    receive do
+      {:status_response, ^ref, status} -> status
+    after
+      2000 -> :unknown
+    end
   end
 
   @doc """
-  Get the connected status.
+  Forces the client process to reconnect immediately.
   """
-  @spec connection_status() :: :connected | :disconnected
-  def connection_status() do
-    GenServer.call(Server, :connection_status)
+  @spec reconnect(pid()) :: :ok
+  def reconnect(client_pid) when is_pid(client_pid) do
+    send(client_pid, :reconnect)
+    :ok
   end
 
   @doc """
-  Forces a connection.
+  Stops the client process gracefully.
   """
-  @spec reconnect() :: :ok
-  def reconnect() do
-    GenServer.cast(Server, :reconnect)
-  end
-
-  @doc """
-  Stops the client gracefully.
-  """
-  @spec stop() :: :ok
-  def stop() do
-    GenServer.stop(Server, :normal)
-  end
-
-  @doc """
-  This function manually put the settings that the OTP application
-  requires to work in the supervision tree.
-  """
-  def child_spec(opts) do
-    %{
-      id: __MODULE__,
-      start: {__MODULE__, :start_link, [opts]},
-      type: :worker,
-      restart: :permanent,
-      shutdown: 500
-    }
+  @spec stop(pid()) :: :ok
+  def stop(client_pid) when is_pid(client_pid) do
+    send(client_pid, :shutdown)
+    :ok
   end
 end

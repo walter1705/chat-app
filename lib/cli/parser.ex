@@ -64,9 +64,12 @@ defmodule CLI.Parser do
   @spec try_connect_user(any(), any()) :: no_return()
   def try_connect_user(user, ip) do
     case Request.try_connect_user(user, ip) do
+      {:error, {:node_creation_failed, :node_not_alive}} ->
+        Util.print_message("Node creation disabled and no node running")
       {:ok, _} ->
         Util.welcome_message(user.username)
         |> Util.print_message()
+        Client.listen_for_commands()
 
       {:error, message} ->
         (Util.client_log_in_help() <> message)
