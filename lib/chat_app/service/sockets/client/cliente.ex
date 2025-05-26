@@ -3,9 +3,8 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
   This module replaces the GenServer for handling client connections
   and communication with a remote node in a simpler process-based approach.
   """
-  alias ElixirSense.Log
   alias CLI.Request
-  alias DB.Schemas.{ChatRoom, ChatRoomUser, Message}
+  alias DB.Schemas.{ChatRoom, Message}
   alias CLI.Util
 
   require Logger
@@ -59,15 +58,18 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
   end
 
   def menu(service, user) do
-    IO.puts("\nOpciones:")
-    IO.puts("1. Entrar a sala.")
-    IO.puts("2. Crear sala de chat")
-    IO.puts("3. Consultar usuarios.")
-    IO.puts("4. Consultar salas.")
-    IO.puts("99. Salir")
-    IO.write("> ")
+  IO.puts("\nOpciones:")
+  IO.puts("1. Entrar a sala.")
+  IO.puts("2. Crear sala de chat")
+  IO.puts("3. Consultar usuarios.")
+  IO.puts("4. Consultar salas.")
+  IO.puts("99. Salir")
+  IO.write("> ")
 
-    case IO.gets("") |> String.trim() |> String.to_integer() do
+  input = IO.gets("") |> String.trim()
+
+  try do
+    case String.to_integer(input) do
       1 -> conectar_sala(service, user)
       2 -> crear_sala(service, user)
       3 -> consultar_usuarios(service, user)
@@ -75,16 +77,23 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
       99 -> end_app(service)
       _ -> IO.puts("Opción no válida.")
     end
-
-    menu(service, user)
+  rescue
+    ArgumentError ->
+      IO.puts("Por favor ingresa un número válido.")
   end
+
+  menu(service, user)
+end
+
 
   defp consultar_salas(servicio, user) do
     send(servicio, {:get_rooms, self()})
+
     receive do
       {:ok, rooms} ->
         Request.request_list_all_rooms(rooms)
         menu(servicio, user)
+
       {:error, reason} ->
         IO.puts("Error: #{reason}")
         menu(servicio, user)
@@ -93,10 +102,12 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
 
   defp consultar_usuarios(servicio, user) do
     send(servicio, {:get_users, self()})
+
     receive do
       {:ok, users} ->
         Request.request_list_all_users(users)
         menu(servicio, user)
+
       {:error, reason} ->
         IO.puts("Error: #{reason}")
         menu(servicio, user)
@@ -113,15 +124,17 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
       {:ok, %ChatRoom{} = chatroom} ->
         IO.puts("Sala \"#{chatroom.name}\" creada.")
         menu(servicio, user)
-      {:error, reason} ->
-        IO.puts("Error: #{reason}")
-        menu(servicio, user)
+
       {:error, :unknown} ->
         IO.puts("Error: No se recibió respuesta del servidor.")
         menu(servicio, user)
-      after
-        5000 -> IO.puts("Error: No se recibió respuesta del servidor.")
-      end
+
+      {:error, reason} ->
+        IO.puts("Error: #{reason}")
+        menu(servicio, user)
+    after
+      5000 -> IO.puts("Error: No se recibió respuesta del servidor.")
+    end
   end
 
   defp conectar_sala(servicio, user) do
@@ -134,6 +147,7 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
       {:ok, %ChatRoom{} = chatroom} ->
         IO.puts("Conectado a la sala \"#{chatroom.name}\". escriba EXIT para salir.")
         chat(chatroom, servicio, chatroom, user)
+
       {:error, reason} ->
         IO.puts("Error: #{reason}")
         menu(servicio, user)
@@ -160,7 +174,7 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
             IO.puts("#{from}: #{content}")
           end)
 
-          chat(chatroom, service, sala,user, updated_history)
+          chat(chatroom, service, sala, user, updated_history)
 
         {:error, reason} ->
           IO.puts("Error: #{reason}")

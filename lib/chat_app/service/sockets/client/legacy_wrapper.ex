@@ -28,18 +28,12 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
   alias ChatApp.Service.Sockets.Client.{Cliente}
   alias ChatApp.Service.Util
 
-  @type node_opts :: [
-          node_name: String.t(),
-          name_type: :shortnames | :longnames,
-          create_node: boolean()
-        ]
-
   @doc """
   Inicia el cliente con creación automática de nodo
   """
-  @spec start({String.t(), String.t()}, node_opts()) :: :ok | {:error, term()}
-  def start({ip, user}, opts \\ []) do
-    case ensure_node(ip, opts) do
+  @spec start({String.t(), String.t()}) :: :ok | {:error, term()}
+  def start({ip, user}) do
+    case ensure_node(ip) do
       :ok ->
         Cliente.start(ip, user)
 
@@ -48,26 +42,21 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
     end
   end
 
-  @spec ensure_node(String.t(), node_opts()) :: :ok | {:error, term()}
-  defp ensure_node(ip, opts) do
-    create_node = Keyword.get(opts, :create_node, true)
-
+  @spec ensure_node(String.t()) :: :ok | {:error, term()}
+  defp ensure_node(ip) do
     case Node.alive?() do
       true ->
         Util.print_message("Node already running: #{Node.self()}")
         :ok
 
-      false when create_node ->
-        create_distributed_node(ip, opts)
+      false  ->
+        create_distributed_node(ip)
 
-      false ->
-        Util.print_message("Node creation disabled and no node running")
-        {:error, :node_not_alive}
     end
   end
 
-  @spec create_distributed_node(String.t(), keyword()) :: :ok | {:error, term()}
-  defp create_distributed_node(ip, _opts) do
+  @spec create_distributed_node(String.t()) :: :ok | {:error, term()}
+  defp create_distributed_node(ip) do
     node_name = "cliente_chat@#{ip}"
     name_type = :longnames
     cookie = Util.get_cookie()
@@ -82,6 +71,9 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
       {:error, reason} ->
         Util.print_message("Failed to create node with #{name_type}: #{inspect(reason)}")
         {:error, reason}
+      _ ->
+        Util.print_message("Node creation failed")
+        {:error, :node_creation_failed}
     end
   end
 end

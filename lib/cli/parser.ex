@@ -9,7 +9,7 @@ defmodule CLI.Parser do
   Also handle most of the request of the module request.
   """
   alias DB.Schemas.User
-  alias CLI.{Client, Request, Main, Util}
+  alias CLI.{ Request, Main, Util}
 
   @spec parse_args([binary()]) :: no_return()
   def parse_args(args) do
@@ -30,6 +30,7 @@ defmodule CLI.Parser do
     case Request.request_log_in(username, password) do
       {:ok, user} ->
         try_connect_user(user, ip)
+
       {:error, message} ->
         message
         |> Util.print_message()
@@ -59,7 +60,7 @@ defmodule CLI.Parser do
     |> Util.print_message()
   end
 
-  @spec try_connect_user(any(), any()) :: no_return()
+  @spec try_connect_user(any(),  String.t()) :: no_return()
   def try_connect_user(user, ip) do
     Request.try_connect_user(user, ip)
   end

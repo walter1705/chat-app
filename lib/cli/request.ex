@@ -3,7 +3,7 @@ defmodule CLI.Request do
   Handles the users input/request from the cli.
   """
   alias ChatApp.Service.{DataService, AuthService}
-  alias CLI.{Main, Formater, Parser}
+  alias CLI.{Main, Formater}
   alias ChatApp.Service.Sockets.Client.LegacyWrapper
   alias ChatApp.Service.Sockets.Server.LegacyWrapper, as: ServerWrapper
 
@@ -77,11 +77,6 @@ defmodule CLI.Request do
   def request_create_room(room_name, :default) do
     DataService.create_room(room_name, "0000", false)
   end
-  #for the
-  @spec request_join_room(String.t()) :: {:ok, term()} | {:error, term()}
-  def request_join_room(room_name) do
-    #DataService.join_room(room_name)
-  end
 
   @doc """
   Get a room by its
@@ -100,6 +95,7 @@ defmodule CLI.Request do
   @doc """
   Tries to connect a user to a remote node.
   """
+  @spec try_connect_user(any(), any()) :: no_return()
   def try_connect_user(user, ip) do
     LegacyWrapper.start({ip, user})
   end

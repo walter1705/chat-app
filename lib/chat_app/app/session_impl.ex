@@ -20,7 +20,7 @@ defmodule ChatApp.App.SessionImpl do
   end
 
   @impl true
-  def handle_call({:add_user, user, node}, _from, users_onsession) do
+  def handle_call({:add_user, user, _node}, _from, users_onsession) do
     new_users = List.insert_at(users_onsession, -1, user)
     {:reply, user, new_users}
   end
