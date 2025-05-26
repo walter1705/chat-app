@@ -34,8 +34,28 @@ defmodule ChatApp.Service.Sockets.Server.Host do
           _ ->
             send(cliente, {:error, :not_found})
         end
+        procesar_mensajes()
       {:send_message, sender, mensaje, sala, user} ->
         broadcast(sala, mensaje, user, sender)
+        procesar_mensajes()
+
+      {:create_room, sender, name} ->
+        case Request.create_room(name, "password", false) do
+          {:ok, sala} ->
+            send(sender, {:ok, sala})
+          {:error, changeset} ->
+            send(sender, {:error, changeset.errors})
+          _ ->
+            send(sender, {:error, :unknown})
+          end
+        procesar_mensajes()
+      {:get_users, sender} ->
+        users = Request.get_users()
+        send(sender, {:ok, users})
+        procesar_mensajes()
+      {:get_rooms, sender} ->
+        rooms = Request.get_rooms()
+        send(sender, {:ok, rooms})
         procesar_mensajes()
       {:end, cliente} ->
         Logger.info("Cliente #{inspect(cliente)} desconectado.")

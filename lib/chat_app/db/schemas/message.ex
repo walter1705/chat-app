@@ -11,11 +11,12 @@ defmodule DB.Schemas.Message do
   end
 
 
-  def changeset(message, attrs) do
-    message
-    |> cast(attrs, [:user_id, :chat_room_id, :content])
-    |> validate_required([:user_id, :chat_room_id, :content])
-    |> validate_length(:content, min: 1)
-    |> validate_length(:content, max: 2000)
-  end
+ def changeset(message, attrs) do
+  message
+  |> cast(attrs, [:user_id, :chat_room_id, :content])
+  |> validate_required([:user_id, :chat_room_id, :content])
+  |> validate_length(:content, min: 1)
+  |> validate_length(:content, max: 2000)
+end
+
 end

@@ -42,7 +42,7 @@ defmodule ChatApp.Service.DataService do
   def get_user(username) do
     Repo.get_by(User, username: username)
     |> case do
-      user=%User{} ->
+      user = %User{} ->
         user
         |> Map.from_struct()
         |> Map.drop([:__meta__])
@@ -67,25 +67,7 @@ defmodule ChatApp.Service.DataService do
     end)
   end
 
-  @doc """
-  Creates a chat room communicating with the repo and hashing the password.
-  iex> case Repo.insert(changeset) do
-        {:ok, room} -> IO.inspect(room, label: "room created")
-        {:error, changeset} -> IO.inspect(changeset.errors, label: "Error")
-  """
-  @spec create_room(String.t(), String.t(), boolean()) :: {atom(), %{}}
-  def create_room(name, password, is_private?) do
-    hashed_password = Bcrypt.hash_pwd_salt(password)
 
-    attrs = %{
-      name: name,
-      hash_password: hashed_password,
-      is_private: is_private?
-    }
-
-    changeset = ChatRoom.changeset(%ChatRoom{}, attrs)
-    Repo.insert(changeset)
-  end
 
   @doc """
   Get all the chat rooms from the table and transform it from its Struct to map
@@ -95,7 +77,7 @@ defmodule ChatApp.Service.DataService do
   @spec get_public_rooms() :: list()
   def get_public_rooms() do
     Repo.all(ChatRoom)
-    |> Enum.filter(& &1.is_private == false)
+    |> Enum.filter(&(&1.is_private == false))
     |> Enum.map(fn room ->
       room
       |> Map.from_struct()
@@ -116,9 +98,20 @@ defmodule ChatApp.Service.DataService do
   """
 
   def get_room_by_name(name) do
-    Repo.get_by(ChatRoom, name: name)
+    IO.puts("Searching for room with name: #{name}")
+
+    case Repo.get_by(ChatRoom, name: name) do
+      nil ->
+        IO.puts("No room found with name: #{name}")
+        nil
+
+      room ->
+        IO.inspect(room, label: "Room found")
+        room
+    end
   end
 
+  @spec create_message(any(), any(), any()) :: any()
   @doc """
   Creates a message communicating with the repo.
   ## Example
@@ -128,12 +121,49 @@ defmodule ChatApp.Service.DataService do
   """
 
   def create_message(sala, mensaje, user) do
+  attrs = %{
+    user_id: user.id,
+    chat_room_id: sala.id,
+    content: mensaje
+  }
+
+  changeset = DB.Schemas.Message.changeset(%DB.Schemas.Message{}, attrs)
+  Repo.insert(changeset)
+end
+
+  @doc """
+  Creates a chat room communicating with the repo and hashing the password.
+  iex> case Repo.insert(changeset) do
+        {:ok, room} -> IO.inspect(room, label: "room created")
+        {:error, changeset} -> IO.inspect(changeset.errors, label: "Error")
+  """
+
+  def create_room(name, password, false) do
+    hashed_password = Bcrypt.hash_pwd_salt(password)
+
     attrs = %{
-      user_id: user.id,
-      chat_room_id: sala.id,
-      content: mensaje
+      name: name,
+      hash_password: hashed_password,
+      is_private: false
     }
-    changeset = DB.Schemas.Message.changeset(%DB.Schemas.Message{}, attrs)
+
+    changeset = ChatRoom.changeset(%ChatRoom{}, attrs)
     Repo.insert(changeset)
   end
+
+  @spec create_room(String.t(), String.t(), boolean()) :: {atom(), %{}}
+  def create_room(name, password, is_private?) do
+    hashed_password = Bcrypt.hash_pwd_salt(password)
+
+    attrs = %{
+      name: name,
+      hash_password: hashed_password,
+      is_private: is_private?
+    }
+
+    changeset = ChatRoom.changeset(%ChatRoom{}, attrs)
+    Repo.insert(changeset)
+  end
+
+
 end

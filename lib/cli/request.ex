@@ -2,8 +2,6 @@ defmodule CLI.Request do
   @moduledoc """
   Handles the users input/request from the cli.
   """
-  alias ChatApp.Data
-  alias Agent.Server
   alias ChatApp.Service.{DataService, AuthService}
   alias CLI.{Main, Formater, Parser}
   alias ChatApp.Service.Sockets.Client.LegacyWrapper
@@ -26,13 +24,18 @@ defmodule CLI.Request do
   end
 
   @doc """
+  Request the users
+  """
+
+  def get_users() do
+    DataService.get_users()
+  end
+
+  @doc """
   Request the outpout of all the users.
   """
-  @spec request_list_all_users() :: no_return()
-  def request_list_all_users() do
-    rqUsers= Task.async(fn -> DataService.get_users() end)
-    users = Task.await(rqUsers)
-
+  @spec request_list_all_users(any()) :: no_return()
+  def request_list_all_users(users) do
     users
     |> Formater.list_of_maps_to_list_of_list()
     |> Formater.format_user_list()
@@ -40,10 +43,18 @@ defmodule CLI.Request do
   end
 
   @doc """
+  Request therooms
+  """
+
+  def get_rooms() do
+    DataService.get_public_rooms()
+  end
+
+  @doc """
   Request the output of all the available public rooms.
   """
-  def request_list_all_rooms() do
-    DataService.get_public_rooms()
+  def request_list_all_rooms(rooms) do
+    rooms
     |> Formater.list_of_maps_to_list_of_list()
     |> Formater.format_room_list()
     |> Main.show_table()
@@ -106,5 +117,13 @@ defmodule CLI.Request do
   """
   def create_message(sala, mensaje, user) do
     DataService.create_message(sala, mensaje, user)
+  end
+
+  @doc """
+  creates a chatroom
+  """
+
+  def create_room(name, password, _is_private?) do
+    DataService.create_room(name, password, false)
   end
 end

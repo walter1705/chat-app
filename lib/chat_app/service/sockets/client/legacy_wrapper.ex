@@ -37,7 +37,7 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
   @doc """
   Inicia el cliente con creación automática de nodo
   """
-  @spec start(String.t(), node_opts()) :: :ok | {:error, term()}
+  @spec start({String.t(), String.t()}, node_opts()) :: :ok | {:error, term()}
   def start({ip, user}, opts \\ []) do
     case ensure_node(ip, opts) do
       :ok ->
