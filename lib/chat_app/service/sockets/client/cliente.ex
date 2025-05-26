@@ -3,7 +3,7 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
   This module replaces the GenServer for handling client connections
   and communication with a remote node in a simpler process-based approach.
   """
-  alias DB.Schemas.ChatRoom
+  alias DB.Schemas.{ChatRoom, ChatRoomUser, Message}
   alias CLI.Util
 
   require Logger
@@ -15,25 +15,25 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
   @doc """
   Starts the client node process.
   """
-  def start(ip) do
-    spawn_link(__MODULE__, :init, [ip])
+  def start(ip, user) do
+    spawn_link(__MODULE__, :init, [ip, user])
   end
 
-  @spec init(any()) :: no_return()
-  def init(ip) do
+  @spec init(any(), any()) :: no_return()
+  def init(ip, user) do
     Logger.info("Initializing chat app client...")
 
     :net_kernel.monitor_nodes(true)
     remote_node = "#{@remote_node_prefix}@#{ip}" |> String.to_atom()
 
     @local_service
-      |> register()
+    |> register()
 
     connect(remote_node)
-      |> IO.inspect()
-      |> initialize_app()
+    |> IO.inspect()
+    |> initialize_app()
 
-    menu({@service, remote_node})
+    menu({@service, remote_node}, user)
   end
 
   defp register(service_name) do
@@ -56,23 +56,25 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
     System.halt(0)
   end
 
-  defp menu(service) do
+  def menu(service, user) do
     IO.puts("\nOpciones:")
-    IO.puts("1. Entrar a sala. ()")
-    IO.puts("2. Consultar autores de un trabajo")
+    IO.puts("1. Entrar a sala.")
+    IO.puts("2. Crear sala de chat")
+    IO.puts("3. Consultar usuarios.")
+    IO.puts("4. Consultar salas.")
     IO.puts("99. Salir")
     IO.write("> ")
 
     case IO.gets("") |> String.trim() |> String.to_integer() do
-      1 -> conectar_sala(service)
+      1 -> conectar_sala(service, user)
       99 -> end_app(service)
       _ -> IO.puts("Opción no válida.")
     end
 
-    menu(service)
+    menu(service, user)
   end
 
-  defp conectar_sala(servicio) do
+  defp conectar_sala(servicio, user) do
     IO.write("Ingrese el nombre de la sala: ")
     name = IO.gets("")
 
@@ -81,25 +83,34 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
     receive do
       {:ok, %ChatRoom{} = chatroom} ->
         IO.puts("Conectado a la sala \"#{chatroom.name}\. escriba EXIT para salir.")
-        chat(chatroom, servicio, chatroom)
+        chat(chatroom, servicio, chatroom, user)
+      {:error, reason} ->
+        IO.puts("Error: #{reason}")
+        menu(servicio, user)
     after
       5000 -> IO.puts("Error: No se recibió respuesta del servidor.")
     end
   end
 
-  defp chat(chatroom, service, sala) do
+  defp chat(chatroom, service, sala, user, history \\ []) do
     IO.write("> ")
     message = IO.gets("") |> String.trim()
 
     if String.upcase(message) == "EXIT" do
-      menu({@service, chatroom.server_node})
+      menu({@service, chatroom.server_node}, user)
     else
-      send(service, {:send_message, self(), message, sala})
+      send(service, {:send_message, self(), message, sala, user})
+      updated_history = [{"You", message} | history]
 
       receive do
-        {:message, msg} ->
-          IO.puts("#{msg.from}: #{msg.content}")
-          chat(chatroom, service, sala)
+        {:message, %Message{} = msg} ->
+          updated_history = [{msg.user_id, msg.content} | updated_history]
+
+          Enum.each(Enum.reverse(updated_history), fn {from, content} ->
+            IO.puts("#{from}: #{content}")
+          end)
+
+          chat(chatroom, service, sala, updated_history)
 
         {:error, reason} ->
           IO.puts("Error: #{reason}")
@@ -107,6 +118,7 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
     end
   end
 
+  @spec end_app(any()) :: no_return()
   def end_app(service) do
     send(service, {:end, self()})
 

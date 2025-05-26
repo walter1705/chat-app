@@ -102,4 +102,38 @@ defmodule ChatApp.Service.DataService do
       |> Map.drop([:__meta__])
     end)
   end
+
+  @doc """
+  Get a chat room from the table by name
+
+  ## example:
+
+    iex> case Repo.get_by(ChatRoom, name: "name") do
+        nil -> IO.puts("Room not found")
+        room -> IO.inspect(room, label: "room found")
+      end
+
+  """
+
+  def get_room_by_name(name) do
+    Repo.get_by(ChatRoom, name: name)
+  end
+
+  @doc """
+  Creates a message communicating with the repo.
+  ## Example
+  iex> case Repo.insert(changeset) do
+        {:ok, message} -> IO.inspect(message, label: "message created")
+        {:error, changeset} -> IO.inspect(changeset.errors, label: "Error")
+  """
+
+  def create_message(sala, mensaje, user) do
+    attrs = %{
+      user_id: user.id,
+      chat_room_id: sala.id,
+      content: mensaje
+    }
+    changeset = DB.Schemas.Message.changeset(%DB.Schemas.Message{}, attrs)
+    Repo.insert(changeset)
+  end
 end

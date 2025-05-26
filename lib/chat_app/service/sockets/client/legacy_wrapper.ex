@@ -38,10 +38,10 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
   Inicia el cliente con creación automática de nodo
   """
   @spec start(String.t(), node_opts()) :: :ok | {:error, term()}
-  def start(ip, opts \\ []) do
+  def start({ip, user}, opts \\ []) do
     case ensure_node(ip, opts) do
       :ok ->
-        Cliente.start(ip)
+        Cliente.start(ip, user)
 
       {:error, reason} ->
         {:error, {:node_creation_failed, reason}}
@@ -67,7 +67,7 @@ defmodule ChatApp.Service.Sockets.Client.LegacyWrapper do
   end
 
   @spec create_distributed_node(String.t(), keyword()) :: :ok | {:error, term()}
-  defp create_distributed_node(ip, opts) do
+  defp create_distributed_node(ip, _opts) do
     node_name = "cliente_chat@#{ip}"
     name_type = :longnames
     cookie = Util.get_cookie()

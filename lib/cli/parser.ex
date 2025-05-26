@@ -30,7 +30,6 @@ defmodule CLI.Parser do
     case Request.request_log_in(username, password) do
       {:ok, user} ->
         try_connect_user(user, ip)
-
       {:error, message} ->
         message
         |> Util.print_message()

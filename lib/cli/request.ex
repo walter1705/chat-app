@@ -2,6 +2,7 @@ defmodule CLI.Request do
   @moduledoc """
   Handles the users input/request from the cli.
   """
+  alias ChatApp.Data
   alias Agent.Server
   alias ChatApp.Service.{DataService, AuthService}
   alias CLI.{Main, Formater, Parser}
@@ -71,11 +72,16 @@ defmodule CLI.Request do
     #DataService.join_room(room_name)
   end
 
-  @spec request_leave_room(String.t()) :: {:ok, term()} | {:error, term()}
-  def request_leave_room(room_name) do
-    #DataService.leave_room(room_name)
+  @doc """
+  Get a room by its
+  """
+  def get_room_by_name(name) do
+    DataService.get_room_by_name(name)
   end
 
+  @doc """
+  Tries to log in a user and return the user.
+  """
   def request_log_in(username, password) do
     AuthService.login(username, password)
   end
@@ -83,14 +89,22 @@ defmodule CLI.Request do
   @doc """
   Tries to connect a user to a remote node.
   """
-  def try_connect_user(_user, ip) do
-    LegacyWrapper.start(ip)
+  def try_connect_user(user, ip) do
+    LegacyWrapper.start({ip, user})
   end
 
+  @spec try_host(binary()) :: {:error, {:node_creation_failed, :node_not_alive}}
   @doc """
   Tries to stablish a server node.
   """
   def try_host(ip) do
     ServerWrapper.start(ip)
+  end
+
+  @doc """
+  Creates and store a message
+  """
+  def create_message(sala, mensaje, user) do
+    DataService.create_message(sala, mensaje, user)
   end
 end
