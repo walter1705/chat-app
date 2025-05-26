@@ -1,63 +1,61 @@
 defmodule ChatApp.Service.Sockets.Server.Host do
   @moduledoc """
-  This module provides functionality to start a TCP socket server
-  and handle client connections using GenServer.
-
-  ## Features
-  - Starts a server that listens for distributed Erlang connections.
-  - Handles multiple client connections concurrently.
-  - State management with GenServer for better reliability.
-  - Graceful handling of client connections and disconnections.
-
-  ## Usage
-
-  # Iniciar el servidor
-  {:ok, pid} = ChatApp.Service.Sockets.Server.start_link()
-
-  # Enviar mensaje a un cliente específico
-  ChatApp.Service.Sockets.Server.send_to_client(pid, client_node, "Hola cliente!")
-
-  # Broadcast a todos los clientes
-  ChatApp.Service.Sockets.Server.broadcast(pid, "Mensaje para todos")
-
+  Este módulo implementa el servidor del sistema de chat y manejo de trabajos.
   """
+
   alias CLI.Request
+  alias DB.Schemas.ChatRoom
   require Logger
 
+  @nombre_servicio :server_node
 
-
-  @service :server_node
-
-
-  @doc """
-  Starts the server node process.
-  """
-  def start_link(ip) do
-    spawn_link(__MODULE__, :init, [ip])
+  def start() do
+    spawn_link(__MODULE__, :init, [])
   end
 
-  def init(ip) do
-    Logger.info("Initializing chat app client...")
+  def init() do
+    Logger.info("Servidor iniciado...")
+    registrar_servicio(@nombre_servicio)
+    procesar_mensajes()
+  end
 
+  defp registrar_servicio(nombre) do
+    Process.register(self(), nombre)
     :net_kernel.monitor_nodes(true)
-    remote_node = "#{@remote_node_prefix}@#{ip}" |> String.to_atom()
-
-    @service
-    |> register()
-
-    receive_request()
   end
 
-  defp register(service_name) do
-    Process.register(self(), service_name)
-  end
-
-  defp receive_request() do
+  defp procesar_mensajes() do
     receive do
+      {:connect_room, name, cliente} ->
+        case Request.get_room_by_name(name) do
+          {:ok, sala} ->
+            send(cliente, {:ok, sala})
+          {:error, :not_found} ->
+            send(cliente, {:error, :not_found})
+        end
+      {:send_message, sender, mensaje, sala} ->
+        broadcast(sala, mensaje, sender)
+        procesar_mensajes()
+      {:end, cliente} ->
+        Logger.info("Cliente #{inspect(cliente)} desconectado.")
+        send(cliente, :end)
+        procesar_mensajes()
+
       _ ->
-        Logger.info("Received request: Unknown")
-        Request.request_for_help()
+        Logger.info("Mensaje desconocido recibido.")
+        procesar_mensajes()
     end
   end
 
+  defp broadcast(sala, mensaje, _sender) do
+    store_message_sala(sala, mensaje)
+    #LOGICA DE IMPRIMIR MENSAJE
+  end
+
+  defp store_message_sala(sala, mensaje) do
+    #FUNCION NO IMPLEMENTADA
+    sala
+    |> ChatRoom.changeset(%{messages: sala.messages ++ [mensaje]})
+    |> DB.Repo.update()
+  end
 end

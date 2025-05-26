@@ -11,7 +11,6 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
   @remote_node_prefix "server_node"
   @service :server_node
   @local_service :client_node
-  @client_name {@local_service, :client_node@client}
 
   @doc """
   Starts the client node process.
@@ -75,26 +74,26 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
 
     receive do
       {:ok, %ChatRoom{} = chatroom} ->
-        IO.puts("Conectado a la sala #{chatroom.name} escriba EXIT para salir.")
-        chat(chatroom)
+        IO.puts("Conectado a la sala \"#{chatroom.name}\. escriba EXIT para salir.")
+        chat(chatroom, servicio, chatroom)
     after
       5000 -> IO.puts("Error: No se recibió respuesta del servidor.")
     end
   end
 
-  defp chat(chatroom) do
+  defp chat(chatroom, service, sala) do
     IO.write("> ")
     message = IO.gets("") |> String.trim()
 
     if String.upcase(message) == "EXIT" do
       menu({@service, chatroom.server_node})
     else
-      send(chatroom.pid, {:send_message, self(), message})
+      send(service, {:send_message, self(), message, sala})
 
       receive do
         {:message, msg} ->
           IO.puts("#{msg.from}: #{msg.content}")
-          chat(chatroom)
+          chat(chatroom, service, sala)
 
         {:error, reason} ->
           IO.puts("Error: #{reason}")
