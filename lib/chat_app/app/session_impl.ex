@@ -15,12 +15,12 @@ defmodule ChatApp.App.SessionImpl do
   """
 
   @impl true
-  def init(users_online) do
+  def init(users_online \\ []) do
     {:ok, users_online}
   end
 
   @impl true
-  def handle_call({:add_user, user}, _from, users_onsession) do
+  def handle_call({:add_user, user, node}, _from, users_onsession) do
     new_users = List.insert_at(users_onsession, -1, user)
     {:reply, user, new_users}
   end
