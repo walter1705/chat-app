@@ -1,7 +1,3 @@
-Aquí tienes una versión mejorada del README para tu proyecto **ChatApp**. El objetivo es hacerlo más profesional, claro y con un diseño estructurado para facilitar la comprensión y el uso de la aplicación.
-
----
-
 # **ChatApp**
 
 A lightweight, embedded CLI-based chat application with a client-server architecture. This application enables secure user registration, server hosting, and client connections for real-time communication.
