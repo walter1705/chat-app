@@ -1,46 +1,24 @@
 defmodule ChatApp.Service.Sockets.Server.LegacyWrapper do
-  alias ChatApp.Service.Sockets.Server.Api
+  alias ChatApp.Service.Sockets.Server.Host
   alias ChatApp.Service.Util
 
   @type node_opts :: [
           node_name: String.t(),
-          name_type: :shortnames | :longnames,
+          name_type: :longnames,
           create_node: boolean()
         ]
 
   @doc """
   Inicia el servidor con creación automática de nodo.
   """
-  @spec start_link(String.t(), node_opts()) :: GenServer.on_start()
-  def start_link(ip, opts \\ []) do
+  @spec start(String.t(), node_opts()) :: :ok | {:error, term()}
+  def start(ip, opts \\ []) do
     case ensure_node(ip, opts) do
       :ok ->
-        Api.start_link()
+        Host.start()
 
       {:error, reason} ->
         {:error, {:node_creation_failed, reason}}
-    end
-  end
-
-  @doc """
-  Función principal compatible con la API original.
-  """
-  @spec main(String.t(), node_opts()) :: :ok
-  def main(ip, opts \\ []) do
-    case start_link(ip, opts) do
-      {:ok, _pid} ->
-        Util.print_message("Server started successfully. Waiting for :end message...")
-
-        receive do
-          :end ->
-            Util.print_message("Received :end signal, shutting down...")
-            Api.stop()
-            :ok
-        end
-
-      {:error, reason} ->
-        Util.print_message("Failed to start server: #{inspect(reason)}")
-        :error
     end
   end
 
@@ -63,9 +41,9 @@ defmodule ChatApp.Service.Sockets.Server.LegacyWrapper do
   end
 
   @spec create_distributed_node(String.t(), node_opts()) :: :ok | {:error, term()}
-  defp create_distributed_node(ip, opts) do
-    node_name = Keyword.get(opts, :node_name, "servidor_chat@#{ip}")
-    name_type = Keyword.get(opts, :name_type, :shortnames)
+  defp create_distributed_node(ip, _opts) do
+    node_name = "server_node@#{ip}"
+    name_type = :longnames
     cookie = Util.get_cookie()
 
     Util.print_message("Creating distributed node: #{node_name}")
@@ -77,19 +55,6 @@ defmodule ChatApp.Service.Sockets.Server.LegacyWrapper do
         :ok
       {:error, reason} ->
         Util.print_message("Failed to create node with #{name_type}: #{inspect(reason)}")
-
-        alternate_type = if name_type == :shortnames, do: :longnames, else: :shortnames
-        Util.print_message("Trying with #{alternate_type}...")
-
-        case Node.start(String.to_atom(node_name), alternate_type) do
-          {:ok, _} ->
-            Util.print_message("Node created with #{alternate_type}: #{node_name}")
-            :ok
-
-          {:error, reason} ->
-            Util.print_message("Failed to create node with #{alternate_type}: #{inspect(reason)}")
-            {:error, reason}
-        end
     end
   end
 end

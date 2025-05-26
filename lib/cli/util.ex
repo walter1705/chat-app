@@ -21,7 +21,6 @@ defmodule CLI.Util do
   @spec print_message(String.t()) :: no_return()
   def print_message(message) do
     IO.puts(message)
-    System.halt(2)
   end
 
   @doc """
@@ -31,10 +30,10 @@ defmodule CLI.Util do
   def list_options() do
     """
     list command options:
-    mix run -e "CLI.Main.main()" -- host <ip>
+    mix run -e "CLI.Main.main()" --no-halt -- host <ip>
     ^^^ To initiate a local server.
 
-    mix run -e "CLI.Main.main()" -- client <username> <password> <ip>
+    mix run -e "CLI.Main.main()" --no-halt -- client <username> <password> <ip>
     ^^^ To initiate n connect a client.
 
     mix run -e "CLI.Main.main()" -- register <username> <password>

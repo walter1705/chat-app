@@ -19,6 +19,7 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
     spawn_link(__MODULE__, :init, [ip])
   end
 
+  @spec init(any()) :: no_return()
   def init(ip) do
     Logger.info("Initializing chat app client...")
 
@@ -29,7 +30,10 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
       |> register()
 
     connect(remote_node)
-      |> initialize_app(remote_node)
+      |> IO.inspect()
+      |> initialize_app()
+
+    menu({@service, remote_node})
   end
 
   defp register(service_name) do
@@ -41,13 +45,15 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
     Node.connect(node)
   end
 
-  def initialize_app(true, server_node) do
+  @spec initialize_app(true) :: :ok
+  def initialize_app(true) do
     Util.print_message("Connected to #{node()}")
-    menu({@service, server_node})
   end
 
-  def initialize_app(false, _server_node) do
+  @spec initialize_app(false) :: no_return
+  def initialize_app(false) do
     Util.print_message("Failed to connect to #{node()}")
+    System.halt(0)
   end
 
   defp menu(service) do
@@ -101,7 +107,7 @@ defmodule ChatApp.Service.Sockets.Client.Cliente do
     end
   end
 
-  defp end_app(service) do
+  def end_app(service) do
     send(service, {:end, self()})
 
     receive do

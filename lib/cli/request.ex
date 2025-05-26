@@ -2,9 +2,11 @@ defmodule CLI.Request do
   @moduledoc """
   Handles the users input/request from the cli.
   """
+  alias Agent.Server
   alias ChatApp.Service.{DataService, AuthService}
   alias CLI.{Main, Formater, Parser}
   alias ChatApp.Service.Sockets.Client.LegacyWrapper
+  alias ChatApp.Service.Sockets.Server.LegacyWrapper, as: ServerWrapper
 
   @doc """
   List the available options of the command 'list'.
@@ -78,7 +80,17 @@ defmodule CLI.Request do
     AuthService.login(username, password)
   end
 
+  @doc """
+  Tries to connect a user to a remote node.
+  """
   def try_connect_user(_user, ip) do
-    LegacyWrapper.start_link(ip)
+    LegacyWrapper.start(ip)
+  end
+
+  @doc """
+  Tries to stablish a server node.
+  """
+  def try_host(ip) do
+    ServerWrapper.start(ip)
   end
 end

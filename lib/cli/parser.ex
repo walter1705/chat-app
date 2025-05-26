@@ -22,8 +22,7 @@ defmodule CLI.Parser do
   end
 
   def handle_parse(["host", ip]) do
-    # TODO
-    Request.request_list_all_users()
+    Request.try_host(ip)
   end
 
   @spec handle_parse(any()) :: no_return()
@@ -63,18 +62,7 @@ defmodule CLI.Parser do
 
   @spec try_connect_user(any(), any()) :: no_return()
   def try_connect_user(user, ip) do
-    case Request.try_connect_user(user, ip) do
-      {:error, {:node_creation_failed, :node_not_alive}} ->
-        Util.print_message("Node creation disabled and no node running")
-      {:ok, _} ->
-        Util.welcome_message(user.username)
-        |> Util.print_message()
-        Client.listen_for_commands()
-
-      {:error, message} ->
-        (Util.client_log_in_help() <> message)
-        |> Util.print_message()
-    end
+    Request.try_connect_user(user, ip)
   end
 
   @doc """
