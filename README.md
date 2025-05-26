@@ -169,8 +169,10 @@ If `bcrypt_elixir` fails during installation, confirm that your system has a wor
 We welcome contributions! Please fork the repository, make your changes, and submit a pull request. Be sure to follow our code style guidelines.
 
 ---
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/walter1705/chat-app)
+
+---
 
 ## **License**
 
 This project is licensed under the Apache v3 license.
-
