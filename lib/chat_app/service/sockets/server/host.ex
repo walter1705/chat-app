@@ -24,7 +24,17 @@ defmodule ChatApp.Service.Sockets.Server.Host do
   alias CLI.Request
   require Logger
 
+
+
   @service :server_node
+
+
+  @doc """
+  Starts the server node process.
+  """
+  def start_link(ip) do
+    spawn_link(__MODULE__, :init, [ip])
+  end
 
   def init(ip) do
     Logger.info("Initializing chat app client...")
