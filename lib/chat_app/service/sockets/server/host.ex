@@ -31,7 +31,7 @@ defmodule ChatApp.Service.Sockets.Server.Host do
         case Request.get_room_by_name(name) do
           %ChatRoom{} = sala ->
             send(cliente, {:ok, sala})
-            new_nodes = [cliente | nodes]
+            new_nodes = [{cliente, sala} | nodes]
             procesar_mensajes(new_nodes)
           _ ->
             send(cliente, {:error, :not_found})
@@ -74,7 +74,8 @@ defmodule ChatApp.Service.Sockets.Server.Host do
     mensaje_valid = store_message_sala(sala, mensaje, user_sender)
     case mensaje_valid do
       %Message{}=message ->
-        nodes |> Enum.each(fn node -> send(node, {:message, message}) end)
+        nodes |> Enum.each(fn {node, sala1}
+        when sala.id == sala1.id -> send(node, {:message, message}) end)
       {:error, _} -> Logger.error("Error al crear el mensaje")
     end
   end
