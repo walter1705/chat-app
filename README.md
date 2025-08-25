@@ -2,6 +2,8 @@
 
 A lightweight, embedded CLI-based chat application with a client-server architecture. This application enables secure user registration, server hosting, and client connections for real-time communication.
 
+> **Disclosure**: This is a basic version that works only with Mix and Elixir's basic process communication (messages). For a view of a real-world project using industry-standard tools, check [this repository](https://github.com/walter1705/phoenix_chat) where I'll be working on a production-grade web application. If it's archived, it means the project is completed.
+
 ---
 
 ## **Table of Contents**
@@ -11,9 +13,10 @@ A lightweight, embedded CLI-based chat application with a client-server architec
 3. [Installation](#installation)
 4. [Usage](#usage)
 
-   * [Starting the Server](#starting-the-server)
-   * [Registering a User](#registering-a-user)
-   * [Connecting a Client](#connecting-a-client)
+   - [Starting the Server](#starting-the-server)
+   - [Registering a User](#registering-a-user)
+   - [Connecting a Client](#connecting-a-client)
+
 5. [Architecture](#architecture)
 6. [Troubleshooting](#troubleshooting)
 
@@ -21,20 +24,20 @@ A lightweight, embedded CLI-based chat application with a client-server architec
 
 ## **Features**
 
-* Lightweight CLI-based chat system.
-* Secure user authentication with `bcrypt_elixir`.
-* Client-server communication.
-* Real-time messaging between connected clients.
-* Modular and scalable server-side design.
+- Lightweight CLI-based chat system.
+- Secure user authentication with `bcrypt_elixir`.
+- Client-server communication.
+- Real-time messaging between connected clients.
+- Modular and scalable server-side design.
 
 ---
 
 ## **Requirements**
 
-* **Elixir:** Ensure Elixir is installed and added to your system's PATH.
+- **Elixir:** Ensure Elixir is installed and added to your system's PATH.
   [Install Elixir](https://elixir-lang.org/install.html) if not already available.
-* **C++ Compiler:** Required for the `bcrypt_elixir` dependency (e.g., `gcc`, `make`).
-* **Erlang Port Mapper Daemon (`epmd`)**: Make sure `epmd` is running on your system to enable distributed node communication.
+- **C++ Compiler:** Required for the `bcrypt_elixir` dependency (e.g., `gcc`, `make`).
+- **Erlang Port Mapper Daemon (`epmd`)**: Make sure `epmd` is running on your system to enable distributed node communication.
 
 Start the daemon:
 
@@ -51,16 +54,19 @@ epmd -daemon
    ```bash
    git clone <repository-url>
    ```
+
 2. Navigate to the project directory:
 
    ```bash
    cd chat_app
    ```
+
 3. Install dependencies:
 
    ```bash
    mix deps.get
    ```
+
 4. Compile the project:
 
    ```bash
@@ -91,8 +97,8 @@ To register a new user:
 mix run -e "CLI.Main.main()" -- register <username> <password>
 ```
 
-* `<username>`: Desired username for the client.
-* `<password>`: Secure password for the client.
+- `<username>`: Desired username for the client.
+- `<password>`: Secure password for the client.
 
 ---
 
@@ -104,9 +110,9 @@ To connect a client to the server:
 mix run -e "CLI.Main.main()" --no-halt -- client <username> <password> <ip>
 ```
 
-* `<username>`: Your registered username.
-* `<password>`: Corresponding password.
-* `<ip>`: IP address of the server.
+- `<username>`: Your registered username.
+- `<password>`: Corresponding password.
+- `<ip>`: IP address of the server.
 
 ---
 
@@ -142,12 +148,13 @@ epmd -daemon
 
 If `bcrypt_elixir` fails during installation, confirm that your system has a working C++ compiler:
 
-* On Ubuntu/Debian:
+- On Ubuntu/Debian:
 
   ```bash
   sudo apt-get install build-essential
   ```
-* On macOS:
+
+- On macOS:
 
   ```bash
   xcode-select --install
@@ -155,8 +162,8 @@ If `bcrypt_elixir` fails during installation, confirm that your system has a wor
 
 ### **3. Connection Fails**
 
-* Ensure the client and server are running on the same network.
-* Verify that both server and client use the same `.erlang.cookie`.
+- Ensure the client and server are running on the same network.
+- Verify that both server and client use the same `.erlang.cookie`.
 
 ---
 
@@ -165,6 +172,7 @@ If `bcrypt_elixir` fails during installation, confirm that your system has a wor
 We welcome contributions! Please fork the repository, make your changes, and submit a pull request. Be sure to follow our code style guidelines.
 
 ---
+
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/walter1705/chat-app)
 
 ---
